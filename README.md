@@ -96,4 +96,4 @@ The trajectory directory, DPAN directory, feature output, and general run direct
 ## Citation
 
 Please cite the manuscript as *Learning to Separate Continually: A Unified Framework for Incremental Speech Separation*, together with SpeechBrain 0.5.16 and the source corpora used. 
-Once the manuscript is accepted, the references will be updated., 
+Once the manuscript is accepted, the references will be updated. 
