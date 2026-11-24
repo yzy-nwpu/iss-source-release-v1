@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "iss-source-release"
+version = "0.2.0"
+description = "Incremental speech separation and denoising research source"
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.0",
+  "speechbrain==0.5.16",
+  "numpy>=1.23,<2.3",
+  "scipy>=1.9",
+  "soundfile>=0.12",
+  "librosa>=0.10.2,<0.12",
+  "PyYAML>=6.0",
+  "pesq>=0.0.4",
+  "mir_eval>=0.7",
+]
+
+[tool.setuptools.packages.find]
+include = ["iss*"]

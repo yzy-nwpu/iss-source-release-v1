@@ -1,0 +1,71 @@
+# ISS speech denoising: 10-noise source model, then four incremental noises.
+task: denoising
+protocol: section6_vanilla_base_batch4_v1
+seed: 2025
+sample_rate: 8000
+device: cuda
+domain_order: [base, alarm, cough, dd, mg]
+source:
+  domain: base
+  train_manifest: data/manifests/denoising/base_tr.jsonl
+  validation_manifest: data/manifests/denoising/base_cv.jsonl
+  test_manifest: data/manifests/denoising/base_tt.jsonl
+domains: [alarm, cough, dd, mg]
+manifests:
+  alarm:
+    train: data/manifests/denoising/alarm_tr.jsonl
+    validation: data/manifests/denoising/alarm_cv.jsonl
+    test: data/manifests/denoising/alarm_tt.jsonl
+  cough:
+    train: data/manifests/denoising/cough_tr.jsonl
+    validation: data/manifests/denoising/cough_cv.jsonl
+    test: data/manifests/denoising/cough_tt.jsonl
+  dd:
+    train: data/manifests/denoising/dd_tr.jsonl
+    validation: data/manifests/denoising/dd_cv.jsonl
+    test: data/manifests/denoising/dd_tt.jsonl
+  mg:
+    train: data/manifests/denoising/mg_tr.jsonl
+    validation: data/manifests/denoising/mg_cv.jsonl
+    test: data/manifests/denoising/mg_tt.jsonl
+base_checkpoint: runs/denoising_source/base_model.pt
+trajectory_dir: runs/denoising/seed2025
+dpan_dir: runs/denoising/dpan
+dpan_features_dir: runs/denoising/dpan_features
+dpan_seed: 2026
+source_output_dir: runs/denoising_source
+output_dir: runs
+model:
+  channels: 256
+  kernel_size: 16
+  stride: 8
+  intra_layers: 8
+  inter_layers: 8
+  heads: 8
+  d_ffn: 1024
+  dual_path_layers: 2
+  chunk_size: 250
+  activation_checkpoint_layers: 24
+  ranks: [1, 3]
+  adapter_scaling: 0.25
+training:
+  source_epochs: 200
+  source_batch_size: 1
+  source_lr: 0.00015
+  epochs: 20
+  batch_size: 4
+  lr: 0.00015
+  gradient_clip: 5.0
+  speed_perturb: true
+  selection: pesq
+  shared_drift_weight: 0.001
+  shared_drift_xi: 0.0005
+dpan:
+  feature_dim: 256
+  distribution: multivariate_laplace
+  epochs: 1000
+  batch_size: 128
+  lr: 10.0
+  momentum: 0.9
+  weight_decay: 0.0
+  seed: 2026

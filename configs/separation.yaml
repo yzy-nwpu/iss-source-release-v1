@@ -1,0 +1,71 @@
+# ISS speaker separation: English source model, then four incremental languages.
+task: separation
+protocol: section6_vanilla_base_batch4_v1
+seed: 2025
+sample_rate: 8000
+device: cuda
+domain_order: [English, Yoruba, Tamil, Catalan, Mandarin]
+source:
+  domain: English
+  train_manifest: data/manifests/separation/English_tr.jsonl
+  validation_manifest: data/manifests/separation/English_cv.jsonl
+  test_manifest: data/manifests/separation/English_tt.jsonl
+domains: [Yoruba, Tamil, Catalan, Mandarin]
+manifests:
+  Yoruba:
+    train: data/manifests/separation/Yoruba_tr.jsonl
+    validation: data/manifests/separation/Yoruba_cv.jsonl
+    test: data/manifests/separation/Yoruba_tt.jsonl
+  Tamil:
+    train: data/manifests/separation/Tamil_tr.jsonl
+    validation: data/manifests/separation/Tamil_cv.jsonl
+    test: data/manifests/separation/Tamil_tt.jsonl
+  Catalan:
+    train: data/manifests/separation/Catalan_tr.jsonl
+    validation: data/manifests/separation/Catalan_cv.jsonl
+    test: data/manifests/separation/Catalan_tt.jsonl
+  Mandarin:
+    train: data/manifests/separation/Mandarin_tr.jsonl
+    validation: data/manifests/separation/Mandarin_cv.jsonl
+    test: data/manifests/separation/Mandarin_tt.jsonl
+base_checkpoint: runs/separation_source/base_model.pt
+trajectory_dir: runs/separation/seed2025
+dpan_dir: runs/separation/dpan
+dpan_features_dir: runs/separation/dpan_features
+dpan_seed: 2026
+source_output_dir: runs/separation_source
+output_dir: runs
+model:
+  channels: 256
+  kernel_size: 16
+  stride: 8
+  intra_layers: 8
+  inter_layers: 8
+  heads: 8
+  d_ffn: 1024
+  dual_path_layers: 2
+  chunk_size: 250
+  activation_checkpoint_layers: 24
+  ranks: [2, 2]
+  adapter_scaling: 0.25
+training:
+  source_epochs: 55
+  source_batch_size: 1
+  source_lr: 0.00015
+  epochs: 20
+  batch_size: 4
+  lr: 0.00015
+  gradient_clip: 5.0
+  speed_perturb: true
+  selection: si_snr
+  shared_drift_weight: 0.001
+  shared_drift_xi: 0.0005
+dpan:
+  feature_dim: 256
+  distribution: multivariate_laplace
+  epochs: 1000
+  batch_size: 128
+  lr: 10.0
+  momentum: 0.9
+  weight_decay: 0.0
+  seed: 2026
